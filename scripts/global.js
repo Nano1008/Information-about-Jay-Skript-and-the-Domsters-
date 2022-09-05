@@ -37,12 +37,16 @@ function highlightPage() {
     // 取得导航链接，然后遍历
     let links = navs[0].getElementsByTagName("a");
     for (let i = 0; i < links.length; i++) {
-        let linkurl = links[i].getAttribute("href");
-        if (window.location.href.indexOf(linkurl) != -1) {
-            links[i].className = "here";
-            let linktext = links[i].lastChild.nodeValue.toLowerCase();
-            document.body.setAttribute("id", linktext);
+        let linkurl;
+        for (let i = 0; i < links.length; i++) {
+            linkurl = links[i].getAttribute("href");
+            if (window.location.href.indexOf(linkurl) != -1) {
+                links[i].className = "here";
+                let linktext = links[i].lastChild.nodeValue.toLowerCase();
+                document.body.setAttribute("id", linktext);
+            }
         }
+
     }
 }
 function moveElement(elementID, final_x, final_y, interval) {
@@ -88,9 +92,11 @@ function prepareSlideshow() {
     if (!document.getElementsByTagName) return false;
     if (!document.getElementById) return false;
     if (!document.getElementById("intro")) return false;
+    // 获取intro节点
     let intro = document.getElementById("intro");
+    // 创建div元素
     let slideshow = document.createElement("div");
-    slideshow.setAttribute("id", slideshow);
+    slideshow.setAttribute("id", "slideshow");
     let frame = document.createElement("img");
     frame.setAttribute("src", "images/frame.gif");
     frame.setAttribute("alt", "");
@@ -125,5 +131,36 @@ function prepareSlideshow() {
         }
     }
 }
-addLoadEvent(prepareSlideshow);
+function showSection(id) {
+    let sections = document.getElementsByTagName("section");
+    for (let i = 0; i < sections.length; i++) {
+        if (sections[i].getAttribute("id") != id) {
+            sections[i].style.display = "none";
+        } else {
+            sections[i].style.display = "block";
+        }
+    }
+}
+function prepareInternalnav() {
+    if (!document.getElementById) return false;
+    if (!document.getElementsByTagName) return false;
+    let articles = document.getElementsByTagName("article");
+    if (articles.length == 0) return false;
+    let navs = articles[0].getElementsByTagName("nav");
+    if (navs.length == 0) return false;
+    let nav = navs[0];
+    let links = nav.getElementsByTagName("a");
+    for (let i=0;i<links.length;i++) {
+        let sectionid = links[i].getAttribute("href").split("#")[1];
+        if (!document.getElementById(sectionid)) return false;
+        document.getElementById(sectionid).style.display = "none";
+        links[i].destination = sectionid;
+        links[i].onclick = function() {
+            showSection(this.destination);
+            return false;
+        }
+    }
+}
 addLoadEvent(highlightPage);
+addLoadEvent(prepareSlideshow);
+addLoadEvent(prepareInternalnav);
