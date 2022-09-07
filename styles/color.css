@@ -98,3 +98,7 @@ tr.highlight td {
     color: #223;
     background-color: #cba;
 }
+
+input.placeholder {
+    color: grey;
+}
